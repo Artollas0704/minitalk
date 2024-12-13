@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aralves- < aralves-@student.42lisboa.co    +#+  +:+       +#+        */
+/*   By: aralves- <aralves-@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 16:36:28 by aralves-          #+#    #+#             */
-/*   Updated: 2024/12/10 22:47:29 by aralves-         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:14:54 by aralves-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ void signal_handler(int signum, siginfo_t *info, void *context)
 	static int	bit_count;
 
 	(void)context;
+	if (!info)
+		exit(0);
     if(signum == SIGUSR1)
 	{
         c |= (1 << bit_count);
@@ -50,14 +52,10 @@ void signal_handler(int signum, siginfo_t *info, void *context)
 		c = 0;
 		bit_count = 0;
 	}
-	if (kill(info->si_pid, SIGUSR1) == -1)
-	{
-		ft_putstr_fd("Error\n", 2);
-		exit(EXIT_FAILURE);
-	}
+	kill(info->si_pid, signum);
 }
 
-/* int main(void)
+int main(void)
 {
 	struct sigaction	sa;
 	
@@ -80,18 +78,4 @@ void signal_handler(int signum, siginfo_t *info, void *context)
 		pause();
 	}
 	return (0);
-} */
-
-int	main(void)
-{
-	struct sigaction	s_action;
-
-	ft_bzero(&s_action, sizeof(struct sigaction));
-	s_action.sa_sigaction = signal_handler;
-	s_action.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &s_action, NULL);
-	sigaction(SIGUSR2, &s_action, NULL);
-	ft_printf("server pid : %i \n", getpid());
-	while (1)
-		pause();
 }
