@@ -6,7 +6,7 @@
 #    By: aralves- <aralves-@student.42lisboa.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/28 18:57:43 by aralves-          #+#    #+#              #
-#    Updated: 2024/12/14 18:03:35 by aralves-         ###   ########.fr        #
+#    Updated: 2024/12/14 18:09:09 by aralves-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,8 @@ SRCS_CLIENT = minitalk.c client_2.c\
 OBJS_SERVER = $(SRCS_SERVER:.c=.o)
 OBJS_CLIENT = $(SRCS_CLIENT:.c=.o)
 
+all: $(NAME_SERVER) $(NAME_CLIENT)
+
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
 	
@@ -38,8 +40,6 @@ $(NAME_CLIENT): $(OBJS_CLIENT)
 		make -C $(LIBFT_DIR) all
 		cp libft/libft.a .
 	$(CC) $(CFLAGS) $(OBJS_CLIENT) -L. -lft -o $(NAME_CLIENT)
-
-all: $(NAME_SERVER) $(NAME_CLIENT)
 
 bonus: all
 
