@@ -6,7 +6,7 @@
 /*   By: aralves- <aralves-@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/10 16:36:28 by aralves-          #+#    #+#             */
-/*   Updated: 2024/12/13 16:14:54 by aralves-         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:50:29 by aralves-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,21 +25,15 @@ void	get_pid(void)
 	ft_putchar_fd('\n', 1);
 }
 
-void signal_handler(int signum, siginfo_t *info, void *context)
+void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	static int	c;
 	static int	bit_count;
 
 	(void)context;
-	if (!info)
-		exit(0);
-    if(signum == SIGUSR1)
+	if (signum == SIGUSR1)
 	{
-        c |= (1 << bit_count);
-	}
-    else if(signum == SIGUSR2)
-	{
-        c &= ~(1 << bit_count);
+		c |= (1 << bit_count);
 	}
 	bit_count++;
 	if (bit_count == 8)
@@ -48,31 +42,27 @@ void signal_handler(int signum, siginfo_t *info, void *context)
 		if (c == '\0')
 		{
 			ft_putchar_fd('\n', 1);
+			kill(info->si_pid, SIGUSR2);
+			c = 0;
+			bit_count = 0;
+			return ;
 		}
 		c = 0;
 		bit_count = 0;
 	}
-	kill(info->si_pid, signum);
+	kill(info->si_pid, SIGUSR1);
 }
 
-int main(void)
+int	main(void)
 {
 	struct sigaction	sa;
-	
+
 	get_pid();
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = signal_handler;
 	sigemptyset(&sa.sa_mask);
-	if (sigaction(SIGUSR1, &sa, NULL) == -1)
-	{
-		ft_putstr_fd("Error\n", 2);
-		return (0);
-	}
-	if (sigaction(SIGUSR2, &sa, NULL) == -1)
-	{
-		ft_putstr_fd("Error\n", 2);
-		return (0);
-	}
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
 	{
 		pause();
